@@ -1,2 +1,2 @@
-# float_representation
-Représentation du stockage d'un nombre à virgule flottante
+# float representation
+Internal storage floating point representation
