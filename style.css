@@ -1,0 +1,9 @@
+th, td {
+   text-align: center;
+   padding: 4px;
+   border: 1px solid darkgrey;
+}
+
+a:after {
+    content: attr(href);
+}
