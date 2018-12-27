@@ -1,3 +1,4 @@
+var float = 0;
 
 $(document).ready(function(){
   //Ajout de la valeur de pi
@@ -5,7 +6,7 @@ $(document).ready(function(){
   $("#pi").html(estimatedPi.toStr());
 
   $('#entry-decimal').on('input',function(){
-      let float = new FloatingType($('#entry-decimal').val());
+      float = new FloatingType($('#entry-decimal').val());
 
       //Formulaire de binary to decimal
       let result = "";
@@ -78,7 +79,6 @@ function pi(){
   let infiniTest = 200;
   let pi = new FloatingType(0);
 
-  let two = new FloatingType(2);
   let four = new FloatingType(4);
   let oneSixteen = new FloatingType(1);
 

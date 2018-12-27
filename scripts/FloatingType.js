@@ -71,6 +71,9 @@ class FloatingType{
     //Size field mantissa
     this.m = type.mantissa;
 
+    if(value === "-Infinity"){
+      value = -Infinity;
+    }
     if(value === "Infinity"){
       value = Infinity;
     }
@@ -81,13 +84,21 @@ class FloatingType{
 
     if((value || value === 0) && !isNaN(value)){
 
-      if(Number.isInteger(value)){
+      if(value === -0){
+        value = "-0";
+      }else if(Number.isInteger(value)){
         value = value.toString();
       }
 
       if(value===Infinity || value == "Infinity"){
         //Infinity
         this.sign = false;
+        this.exponent = this._exponentToBinary(Math.pow(2,this.e)-1-this._dOffset());
+        this.exponent.length = this.e;
+        this.mantissa = [];
+        this.mantissa.length = this.m;
+      }else if(value===-Infinity || value == "-Infinity"){
+        this.sign = true;
         this.exponent = this._exponentToBinary(Math.pow(2,this.e)-1-this._dOffset());
         this.exponent.length = this.e;
         this.mantissa = [];
@@ -283,17 +294,17 @@ class FloatingType{
     //Step 5 - How many space to move
     let exponent = 0;
     if(wholeSize>1){
-      //Calcul du décalage à droite
+      //Calc right shift
       exponent += (wholeSize-1);
     }else if (wholeSize<1) {
-      //Décalage à gauche
+      //Calcd left shift
       let shift = binaryMantissa.indexOf(true);
       exponent -= (shift+1);
       for(let i=0;i<shift;i++){
         binaryMantissa.shift();
       }
     }
-    binaryMantissa.shift(); //Suppression de la valeur 1 caché
+    binaryMantissa.shift(); //remove of the hidden 1
     binaryMantissa.length = this.m;
 
     //Step 6+7 - Exponent to Binary
@@ -327,7 +338,11 @@ class FloatingType{
       return f2;
     }
 
-    //TODO: Check sign
+    //Manage special case (-Infinity + Infinity -> NaN)
+    if(f1.isInfinity() && f2.isInfinity() && f1.sign != f2.sign){
+      return new FloatingType(NaN);
+    }
+
     if(f1.isInfinity()){
       return f1;
     }else if(f2.isInfinity()){
@@ -474,13 +489,11 @@ class FloatingType{
       return f2;
     }
     
-    //TODO: Check sign
-    if(f1.isInfinity()){
-      return f1;
-    }else if(f2.isInfinity()){
-      return f2;
+    //Manage special case (-Infinity + Infinity -> NaN)
+    if(f1.isInfinity() || f2.isInfinity()){
+      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*Infinity);
     }
-
+    
     f1.mantissa.unshift(true);
     f2.mantissa.unshift(true);
     let result = f1.clone();
@@ -582,9 +595,8 @@ class FloatingType{
       return f1;
     }
 
-    //TODO: Manage sign
     if(f2.isInfinity()){
-      return new FloatingType(0);
+      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*0);
     }
 
     if(f1.isInfinity()){
@@ -719,16 +731,21 @@ class FloatingType{
     }
 
     if(this.isInfinity()){
-      return Infinity;
+      return (this.sign?-1:1)*Infinity;
     }
 
     if(this.isZero()){
-      return 0;
+      if(this.sign)
+        return "-0";
+      else
+        return 0;
     }
 
     let exp = this._exponentDecimal();
     let length=this.mantissa.length;
     let result = 1; // valeur caché, compensation
+
+    //TODO: Display subnormal values
 
     // Limitation du travail
     while(this.mantissa[length-1] != true && length >= 1){
@@ -752,13 +769,12 @@ class FloatingType{
       return NaN;
     }
 
-    //TODO: Manage sign
     if(this.isInfinity()){
-      return Infinity;
+      return (this.sign?-1:1)*Infinity;
     }
 
     if(this.isZero()){
-      return 0;
+      return (this.sign?-1:1)*0;
     }
 
     //Code here with "this" to access Object property
@@ -783,7 +799,7 @@ class FloatingType{
 
     calculated = calculated.toString();
 
-    //Suppression de la notation exponentielle
+    //Remove exponential  notation
     let temp = calculated.split('.');
     calculated = ""+temp[0];
     if(temp[1]){
@@ -796,7 +812,7 @@ class FloatingType{
     }
     calculated = calculated.slice(0, pointPosition) + '.' + calculated.slice(pointPosition);
 
-    //Affichage
+    //Display
     let signe  = (this.sign?'-':'+');
     let result = signe;
     result += calculated;
