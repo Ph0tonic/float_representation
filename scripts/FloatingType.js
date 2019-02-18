@@ -5,11 +5,11 @@
  */
 
 var FloatingTypes = Object.freeze({
-  "HALF":{exponent:5, mantissa:10},
-  "SINGLE":{exponent:8, mantissa:23},
-  "DOUBLE":{exponent:11, mantissa:52},
-  "EXTENDED":{exponent:15, mantissa:64},
-  "QUAND":{exponent:15, mantissa:112}
+  HALF:{exponent:5, mantissa:10, name:'Half - 16 bits'},
+  SINGLE:{exponent:8, mantissa:23, name:'Single - 32 bits'},
+  DOUBLE:{exponent:11, mantissa:52, name:'Double - 64 bits'},
+  EXTENDED:{exponent:15, mantissa:64, name:'Extended - 80 bits'},
+  QUAD:{exponent:15, mantissa:112, name:'Quad - 128 bits'}
 })
 
 class LogicOp{
@@ -66,6 +66,12 @@ class LogicOp{
  */
 class FloatingType{
   constructor(value, type = FloatingTypes.DOUBLE) {
+    if(value instanceof Object){
+      type = value;
+      value = undefined;
+    }
+    this.type = type;
+
     //Size for field exponent
     this.e = type.exponent;
     //Size field mantissa
@@ -128,7 +134,7 @@ class FloatingType{
   }
 
   clone() {
-    let float = new FloatingType();
+    let float = new FloatingType(null, this.type);
     float.sign = this.sign;
     float.exponent = this.exponent.slice(0); // Copie profonde du tableau
     float.e = this.e;
@@ -141,6 +147,7 @@ class FloatingType{
     //Exposant décalé = (2^e)-1 & mantissa <> 0
     let mantissaClone = this.mantissa.slice(0);
     LogicOp.minimise(mantissaClone);
+    console.log("clone"+this.e)
     return (this._exponentDecimal()+this._dOffset() == Math.pow(2,this.e)-1 && mantissaClone.length != 0);
   }
 
@@ -326,6 +333,10 @@ class FloatingType{
     let f2 = value.clone();
 
     //Special cases
+    if(f1.isZero() && f2.isZero()){
+      return new FloatingType(f1.sign && f2.sign ? -0 : 0, this.type);
+    }
+
     if(f1.isZero()){
       return f2;
     }else if(f2.isZero()){
@@ -340,7 +351,7 @@ class FloatingType{
 
     //Manage special case (-Infinity + Infinity -> NaN)
     if(f1.isInfinity() && f2.isInfinity() && f1.sign != f2.sign){
-      return new FloatingType(NaN);
+      return new FloatingType(NaN, this.type);
     }
 
     if(f1.isInfinity()){
@@ -407,7 +418,7 @@ class FloatingType{
       f.mantissa.length = f.m;
       if(!this._checkExponent(exp)){
         //Overflow or Underflow -> Infinity
-        return new FloatingType(Infinity);
+        return new FloatingType(Infinity, this.type);
       }
       f.exponent = f._exponentToBinary(exp);
 
@@ -448,7 +459,7 @@ class FloatingType{
 
       if(!this._checkExponent(exp)){
         //Overflow or Underflow -> Infinity
-        return new FloatingType(Infinity);
+        return new FloatingType(Infinity, this.type);
       }
       f.exponent = f._exponentToBinary(exp);
     }
@@ -466,7 +477,7 @@ class FloatingType{
 
   mult(n){
     if(Number.isInteger(n)){
-      n = new FloatingType(n);
+      n = new FloatingType(n, this.type);
     }
 
     let f1 = n.clone();
@@ -480,7 +491,7 @@ class FloatingType{
     }
 
     if(f1.isZero() && f2.isInfinity() || f2.isZero() && f1.isInfinity()){
-      return new FloatingType(NaN);
+      return new FloatingType(NaN, this.type);
     }
 
     if(f1.isZero()){
@@ -491,7 +502,7 @@ class FloatingType{
     
     //Manage special case (-Infinity + Infinity -> NaN)
     if(f1.isInfinity() || f2.isInfinity()){
-      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*Infinity);
+      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*Infinity, this.type);
     }
     
     f1.mantissa.unshift(true);
@@ -554,7 +565,7 @@ class FloatingType{
     result.mantissa = binary;
     if(!this._checkExponent(exp)){
       //Overflow or Underflow -> Infinity
-      return new FloatingType(Infinity);
+      return new FloatingType(Infinity, this.type);
     }
     result.exponent = result._exponentToBinary(exp);
 
@@ -570,7 +581,7 @@ class FloatingType{
   divBy(n){
     //Return a new FloatingType after division by an int
     if(Number.isInteger(n)){
-      n = new FloatingType(n);
+      n = new FloatingType(n, this.type);
     }
 
     let f1 = this.clone();
@@ -584,11 +595,12 @@ class FloatingType{
     }
 
     if(f2.isZero() && f1.isInfinity()){
-      return new FloatingType(NaN);
+      return new FloatingType(NaN, this.type);
     }
 
+    //TODO: Fix sign
     if(f2.isZero()){
-      return new FloatingType(Infinity);
+      return new FloatingType(Infinity, this.type);
     }
 
     if(f1.isZero() ){
@@ -596,7 +608,7 @@ class FloatingType{
     }
 
     if(f2.isInfinity()){
-      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*0);
+      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*0, this.type);
     }
 
     if(f1.isInfinity()){
@@ -705,7 +717,7 @@ class FloatingType{
 
     if(!this._checkExponent(exp)){
       //Overflow or Underflow -> Infinity
-      return new FloatingType(Infinity);
+      return new FloatingType(Infinity, this.type);
     }
     result.exponent = result._exponentToBinary(exp);
 
@@ -718,8 +730,8 @@ class FloatingType{
     return result;
   }
 
-  static oneBy(n){
-    let float = new FloatingType(1);
+  static oneBy(n, type = FloatingTypes.DOUBLE){
+    let float = new FloatingType(1, type);
     return float.divBy(n);
   }
 
@@ -774,7 +786,10 @@ class FloatingType{
     }
 
     if(this.isZero()){
-      return (this.sign?-1:1)*0;
+      if(this.sign)
+        return "-0";
+      else
+        return 0;
     }
 
     //Code here with "this" to access Object property
@@ -799,7 +814,7 @@ class FloatingType{
 
     calculated = calculated.toString();
 
-    //Remove exponential  notation
+    //Remove exponential notation
     let temp = calculated.split('.');
     calculated = ""+temp[0];
     if(temp[1]){

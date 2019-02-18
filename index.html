@@ -4,9 +4,7 @@
   <meta charset="utf-8">
   <title>Labo 1 - Algo num</title>
   <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <!-- Optional theme -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <!-- Main css -->
   <link rel="stylesheet" href="style.css" >
 </header>
@@ -14,20 +12,27 @@
   <div class="container">
     <div class="page-header">
       <h1>TP OS</h1>
-      <p>Author:</p>
+      <p>Author : </p>
       <ul>
         <li>Wermeille Bastien</li>
       </ul>
     </div>
-    <div class="form-inline">
+    <div>
       <h2>Part 1</h2>
       <h3>Bidirectionnal conversion</h3>
       <div class="form-group">
+      <label for="number-type">Type</label>
+      <select id="number-type" name="number-type" class="form-control">
+        <!-- TODO complte via JS -->
+      </select> 
+      </div>
+      <div class="form-group">
+        <label for="entry-decimal">Enter your number : </label>
         <input type="text" class="form-control" id="entry-decimal" placeholder="NaN">
       </div>
       <h4>Résults</h3>
-      <table>
-        <thead>
+      <table class="table table-bordered">
+        <thead class="thead-dark">
           <tr>
             <th>Sign</th>
             <th>Exponant</th>
@@ -40,46 +45,47 @@
       <span id="binary"></span>
     </div>
     <hr>
-    <div>
+    <div class"form">
       <h2>Part 2 - Operations with numbers</h2>
       <h3>Addition (A+B)</h3>
       <div class="form-inline">
-        <div class="form-group">
-          <input type="text" class="form-control" id="a1" placeholder="A">
+        <div>
+          <input type="text" class="form-control" id="a1" placeholder="A"/>
           <span>+</span>
-          <input type="text" class="form-control" id="b1" placeholder="B">
+          <input type="text" class="form-control" id="b1" placeholder="B"/>
+          <input type="button" id="btnAdd" class="btn btn-light" value="="/>
+          <span id="addition"></span>
         </div>
-        <input type="button" id="btnAdd" class="btn btn-default" value="="></input>
-        <span id="addition"></span>
+      </diV>
       <h3>substraction (A-B)</h3>
       <div class="form-inline">
-        <div class="form-group">
-          <input type="text" class="form-control" id="a2" placeholder="A">
+        <div>
+          <input type="text" class="form-control" id="a2" placeholder="A"/>
           <span>-</span>
-          <input type="text" class="form-control" id="b2" placeholder="B">
+          <input type="text" class="form-control" id="b2" placeholder="B"/>
+          <input type="button" id="btnSub" class="btn btn-light" value="="/>
+          <span id="substraction"></span>
         </div>
-        <input type="button" id="btnSub" class="btn btn-default" value="="></input>
-        <span id="substraction"></span>
       </div>
       <h3>Multiplication (A*B)</h3>
       <div class="form-inline">
-        <div class="form-group">
-          <input type="text" class="form-control" id="a3" placeholder="A">
+        <div>
+          <input type="text" class="form-control" id="a3" placeholder="A"/>
           <span>*</span>
-          <input type="text" class="form-control" id="b3" placeholder="B">
+          <input type="text" class="form-control" id="b3" placeholder="B"/>
+          <input type="button" id="btnMult" class="btn btn-light" value="="/>
+          <span id="multiplication"></span>
         </div>
-        <input type="button" id="btnMult" class="btn btn-default" value="="></input>
-        <span id="multiplication"></span>
       </div>
       <h3>Division (A/B)</h3>
       <div class="form-inline">
-        <div class="form-group">
-          <input type="text" class="form-control" id="a4" placeholder="A">
+        <div>
+          <input type="text" class="form-control" id="a4" placeholder="A"/>
           <span>/</span>
-          <input type="text" class="form-control" id="b4" placeholder="B">
+          <input type="text" class="form-control" id="b4" placeholder="B"/>
+          <input type="button" id="btnDiv" class="btn btn-light" value="="/>
+          <span id="division"></span>
         </div>
-        <input type="button" id="btnDiv" class="btn btn-default" value="="></input>
-        <span id="division"></span>
       </div>
     </div>
     <hr>

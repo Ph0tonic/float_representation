@@ -1,12 +1,21 @@
 var float = 0;
 
-$(document).ready(function(){
+$(document).ready(()=>{
   //Ajout de la valeur de pi
   let estimatedPi = pi();
   $("#pi").html(estimatedPi.toStr());
 
-  $('#entry-decimal').on('input',function(){
-      float = new FloatingType($('#entry-decimal').val());
+  Object.keys(FloatingTypes).map((objectKey, index)=>{
+    let type = FloatingTypes[objectKey];
+    $("#number-type").append(new Option(type.name, objectKey));
+  });
+  
+  $("#number-type").change(()=>{
+    $('#entry-decimal').trigger('input');
+  });
+  
+  $('#entry-decimal').on('input',()=>{
+      float = new FloatingType($('#entry-decimal').val(), FloatingTypes[$("#number-type").val()]);
 
       //Formulaire de binary to decimal
       let result = "";
@@ -27,12 +36,12 @@ $(document).ready(function(){
       $('#binary').html(result);
   });
 
-  setTimeout(function(){
+  setTimeout(() => {
     $('#entry-decimal').trigger('input');
 
-    $('#binary').change('.input-binary', function(){
+    $('#binary').change('.input-binary', ()=>{
       //Getting entry data
-      let float = new FloatingType();
+      let float = new FloatingType(FloatingTypes[$("#number-type").val()]);
       float.sign = $('#s1').prop('checked');
 
       for(let i=0;i<float.e;i++){
@@ -48,25 +57,25 @@ $(document).ready(function(){
   }, 1);
 
   //Actions des boutons bonus
-  $('#btnAdd').on('click',function(){
+  $('#btnAdd').on('click',()=>{
     let a = new FloatingType($('#a1').val());
     let b = new FloatingType($('#b1').val());
     $('#addition').text(a.add(b).toStr());
   });
 
-  $('#btnSub').on('click',function(){
+  $('#btnSub').on('click',()=>{
     let a = new FloatingType($('#a2').val());
     let b = new FloatingType($('#b2').val());
     $('#substraction').text(a.sub(b).toStr());
   });
 
-  $('#btnMult').on('click',function(){
+  $('#btnMult').on('click',()=>{
     let a = new FloatingType($('#a3').val());
     let b = new FloatingType($('#b3').val());
     $('#multiplication').text(a.mult(b).toStr());
   });
 
-  $('#btnDiv').on('click',function(){
+  $('#btnDiv').on('click',()=>{
     let a = new FloatingType($('#a4').val());
     let b = new FloatingType($('#b4').val());
     $('#division').text(a.divBy(b).toStr());
@@ -76,15 +85,17 @@ $(document).ready(function(){
 function pi(){
   //    Somme de 0 à l'infini de ((4/(8n+1)-2/(8n+4)-1/(8n+5)-1/(8n+6))*(1/16)^n)
   // -> Somme de 0 à l'infini de ((4/(8n+1)-1/(4n+2)-1/(8n+5)-1/(8n+6))*(1/16)^n)
-  let infiniTest = 200;
-  let pi = new FloatingType(0);
 
-  let four = new FloatingType(4);
-  let oneSixteen = new FloatingType(1);
+  let infiniTest = 200;
+  let pi = new FloatingType(0, FloatingTypes.QUAD);
+
+  let four = new FloatingType(4, FloatingTypes.QUAD);
+  let one = new FloatingType(1, FloatingTypes.QUAD);
+  let oneSixteen = new FloatingType(1, FloatingTypes.QUAD);
 
   for(let n=0;n<infiniTest;++n){
-    pi = pi.add(four.divBy(new FloatingType(8*n+1)).sub(FloatingType.oneBy(4*n+2)).sub(FloatingType.oneBy(8*n+5)).sub(FloatingType.oneBy(8*n+6)).mult(oneSixteen));
-    oneSixteen = oneSixteen.mult(FloatingType.oneBy(16));
+    pi = pi.add(four.divBy(new FloatingType(8*n+1, FloatingTypes.QUAD)).sub(one.divBy(4*n+2)).sub(one.divBy(8*n+5)).sub(one.divBy(8*n+6)).mult(oneSixteen));
+    oneSixteen = oneSixteen.mult(one.divBy(16));
   }
   return pi;
 }
