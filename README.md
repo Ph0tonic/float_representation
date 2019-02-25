@@ -1,7 +1,6 @@
 # Float representation
 Internal storage floating point representation
 
-
 ## TODO
 ### JS
 - [X] Float representation

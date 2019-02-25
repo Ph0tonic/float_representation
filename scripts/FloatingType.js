@@ -177,10 +177,11 @@ class FloatingType{
   _wholeToBinary(whole){
     //Convert an int as an integer part in binary
     let binary = [];
-    while(whole != 0){
-      binary.unshift(!!(whole%2)); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
-      whole-=whole%2;
-      whole/=2;
+    while(!whole.isZero()){
+      console.log(whole);
+      binary.unshift(!!(whole.mod(2).valueOf())); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
+      whole=whole.minus(whole.mod(2));
+      whole=whole.div(2);
     }
     return binary;
   }
@@ -280,14 +281,19 @@ class FloatingType{
         }
       }
     }
+
     if(parts[0].length==0){
       parts[0] = "0";
     }
 
-    let whole = this._wholeToBinary(parseInt(parts[0]));
+    console.log("Whole : "+new BigNumber(parts[0]))
+    let whole = this._wholeToBinary(new BigNumber(parts[0]));
+    console.log("Whole : "+whole)
+    console.log("Decimal : "+parts[1])
 
     //Step 3 - Fraction section to binary
     let decimal = this._decimalToBinary(parts[1]);
+    console.log("Decimal : "+decimal)
 
     //Step 3.5 - Special case 0
     if(decimal.length === 0 && whole.length === 0){
@@ -306,7 +312,7 @@ class FloatingType{
       //Calc right shift
       exponent += (wholeSize-1);
     }else if (wholeSize<1) {
-      //Calcd left shift
+      //Calc left shift
       let shift = binaryMantissa.indexOf(true);
       exponent -= (shift+1);
       for(let i=0;i<shift;i++){
@@ -319,422 +325,6 @@ class FloatingType{
     //Step 6+7 - Exponent to Binary
     this.exponent = this._exponentToBinary(exponent);
     this.mantissa = binaryMantissa;
-  }
-
-  add(value){
-    //Return a new FloatingType after addition
-    /*
-      1. Rewrite the smaller number such that its exponent matches with the exponent of the larger number.
-      2. Add the mantissas
-      3. Put the result in Normalised Form
-      4. check for overflow/underflow of the exponent after normalisation
-    */
-
-    //Step 0 - Clone des valeurs
-    let f1 = this.clone();
-    let f2 = value.clone();
-
-    //Special cases
-    if(f1.isZero() && f2.isZero()){
-      return new FloatingType(f1.sign && f2.sign ? -0 : 0, this.type);
-    }
-
-    if(f1.isZero()){
-      return f2;
-    }else if(f2.isZero()){
-      return f1;
-    }
-
-    if(f1.isNaN()){
-      return f1;
-    }else if(f2.isNaN()){
-      return f2;
-    }
-
-    //Manage special case (-Infinity + Infinity -> NaN)
-    if(f1.isInfinity() && f2.isInfinity() && f1.sign != f2.sign){
-      return new FloatingType(NaN, this.type);
-    }
-
-    if(f1.isInfinity()){
-      return f1;
-    }else if(f2.isInfinity()){
-      return f2;
-    }
-
-    //Step 0.5 -> put smaller one in f1
-    let e1 = f1._exponentDecimal(f1.exponent);
-    let e2 = f2._exponentDecimal(f2.exponent);
-    let diff = Math.abs(e1-e2);
-
-    let swap = false;
-    if(e1 > e2){
-      swap = true;
-    }else if(e1 === e2){
-      //Detect if swap neccessairy when they have the same exponent
-      swap = LogicOp.gte(f1.mantissa,f2.mantissa);
-    }
-
-    if(swap){
-      //Echange des deux valeurs
-      f2 = [f1, f1 = f2][0];
-      e2 = [e1, e1 = e2][0];
-    }
-
-    //We base our new number on the greatest(exponent) number
-    let f = f2.clone();
-    let exp = e2;
-
-    //Step 1 - Rewrite smaller one -> e1
-    f1.mantissa.unshift(true); // Affichage du bit caché
-    f2.mantissa.unshift(true); // Affichage du bit caché
-    if(diff>0){
-      for(let i=0;i<diff;++i){
-        f1.mantissa.unshift(false);
-      }
-    }
-
-    //Step 2 - Addition of mantissa
-    if(f1.sign === f2.sign){
-      //Addition standard for signs
-      let length = f1.mantissa.length; // Use f1.length because it's the smallest and then the longer number
-      let hold = false;
-      let binary = [];
-      binary.length = length;
-      for(let i=length-1;i>=0;--i){
-        binary[i] = LogicOp.xor(f1.mantissa[i],f2.mantissa[i],hold);
-        hold = LogicOp.hold(f1.mantissa[i],f2.mantissa[i],hold);
-      }
-
-      //Step 3 - Normalise result
-      if(hold){
-        //Add hold and increase the exponent
-        exp++;
-        binary.unshift(true);
-      }
-
-      //Hide the hidden bit
-      binary.shift();
-
-      f.mantissa = binary.slice(0);
-      f.mantissa.length = f.m;
-      if(!this._checkExponent(exp)){
-        //Overflow or Underflow -> Infinity
-        return new FloatingType(Infinity, this.type);
-      }
-      f.exponent = f._exponentToBinary(exp);
-
-    }else{
-      //Sign equal to the greatest exponent number
-      f.sign = f2.sign;
-
-      //Mantissa substraction
-      let length = f1.mantissa.length; // Use f1.length because it's the smallest and then the longer number
-      let binary = [];
-      binary.length = length;
-
-      //Substraction
-      for(let i=length-1;i>=0;--i){
-        binary[i] = (f1.mantissa[i] != true && f2.mantissa[i] === true || f2.mantissa[i] != true && f1.mantissa[i]===true);
-        if(f2.mantissa[i] != true && f1.mantissa[i] === true){
-          //Update f2
-          let j = i;
-          while(j>0 && f2.mantissa[j]!=true){
-            f2.mantissa[j] = !(f2.mantissa[j] === true);
-            --j;
-          }
-          f2.mantissa[j] = !(f2.mantissa[j] === true);
-        }
-      }
-
-      //Step 3 - Normalise result
-      exp -= LogicOp.minimise(binary);
-      if(binary.length==0){
-        //Result = 0
-        binary = [false];
-        exp = -this._dOffset();
-      }
-
-      binary.shift() // Hide hidden bit
-      f.mantissa = binary;
-      f.mantissa.length = f.m;
-
-      if(!this._checkExponent(exp)){
-        //Overflow or Underflow -> Infinity
-        return new FloatingType(Infinity, this.type);
-      }
-      f.exponent = f._exponentToBinary(exp);
-    }
-
-    f._cleanMantissa();
-    return f;
-  }
-
-  sub(value){
-    //Return a new FloatingType after substraction
-    let f1 = value.clone();
-    f1.sign = !f1.sign;
-    return this.add(f1);
-  }
-
-  mult(n){
-    if(Number.isInteger(n)){
-      n = new FloatingType(n, this.type);
-    }
-
-    let f1 = n.clone();
-    let f2 = this.clone();
-
-    //Special cases
-    if(f1.isNaN()){
-      return f1;
-    }else if(f2.isNaN()){
-      return f2;
-    }
-
-    if(f1.isZero() && f2.isInfinity() || f2.isZero() && f1.isInfinity()){
-      return new FloatingType(NaN, this.type);
-    }
-
-    if(f1.isZero()){
-      return f1;
-    }else if(f2.isZero()){
-      return f2;
-    }
-    
-    //Manage special case (-Infinity + Infinity -> NaN)
-    if(f1.isInfinity() || f2.isInfinity()){
-      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*Infinity, this.type);
-    }
-    
-    f1.mantissa.unshift(true);
-    f2.mantissa.unshift(true);
-    let result = f1.clone();
-
-    //Step 1 - addition of the exponent
-    let exp = f1._exponentDecimal() + f2._exponentDecimal();
-
-    //Step 2 - multiplication of the mantissa
-    let binary = result.mantissa.slice(0);
-
-    //f1*f2
-    //      1.000 = f1
-    //   ×  1.110 = f2
-    //   -----------
-    //          0000
-    //         1000
-    //        1000
-    //   +   1000
-    //   -----------
-    //       1110000  ===> 1.110000
-
-    //Info about i, j and k
-    // i : indice for looping over the multiplicator
-    // j : indice for looping over the multiplied number
-    // k : indice to compensate an hold, added at the front of the number
-
-    let k = 0; //Compensation lorsque l'on ajoute un bit supplémentaire à binary
-
-    for(let i=1;i<f2.mantissa.length;++i){
-      let hold = false;
-      if(f2.mantissa[i]){
-        let j = 0;
-        for(j=f1.mantissa.length-1;j>=0;--j){
-          let newHold = LogicOp.hold(f1.mantissa[j],binary[i+j+k],hold);
-          binary[i+j+k] = LogicOp.xor(f1.mantissa[j],binary[i+j+k],hold);
-          hold = newHold;
-        }
-        //Add a potential carry
-        while(hold){
-          if(i+j+k>=0){
-            let newHold = LogicOp.hold(binary[i+j+k],hold,false);
-            binary[i+j+k] = LogicOp.xor(binary[i+j+k],hold,false);
-            hold = newHold;
-          }else{
-            binary.unshift(true);
-            hold = false;
-            ++k;
-            ++exp;
-          }
-          --j;
-        }
-      }
-    }
-
-    //Step 3 - Normalise mantissa
-    exp -= LogicOp.minimise(binary);
-    binary.shift();
-    result.mantissa = binary;
-    if(!this._checkExponent(exp)){
-      //Overflow or Underflow -> Infinity
-      return new FloatingType(Infinity, this.type);
-    }
-    result.exponent = result._exponentToBinary(exp);
-
-    //Step 4 - Round result
-    result.mantissa.length = result.m;
-
-    //Step 5 - Adjust sign
-    result.sign = LogicOp.xor(f1.sign,f2.sign,false);
-
-    return result;
-  }
-
-  divBy(n){
-    //Return a new FloatingType after division by an int
-    if(Number.isInteger(n)){
-      n = new FloatingType(n, this.type);
-    }
-
-    let f1 = this.clone();
-    let f2 = n.clone();
-
-    //Special cases
-    if(f1.isNaN()){
-      return f1;
-    }else if(f2.isNaN()){
-      return f2;
-    }
-
-    if(f2.isZero() && f1.isInfinity()){
-      return new FloatingType(NaN, this.type);
-    }
-
-    //TODO: Fix sign
-    if(f2.isZero()){
-      return new FloatingType(Infinity, this.type);
-    }
-
-    if(f1.isZero() ){
-      return f1;
-    }
-
-    if(f2.isInfinity()){
-      return new FloatingType((((f1.sign+f2.sign)%2)*-2+1)*0, this.type);
-    }
-
-    if(f1.isInfinity()){
-      return f1;
-    }
-
-    f1.mantissa.unshift(true);
-    f2.mantissa.unshift(true);
-    let result = f1.clone();
-
-    //Step 1 - substraction of the exponent
-    let exp = f1._exponentDecimal() - f2._exponentDecimal();
-
-    //Step 2 - division of the mantissa
-    //  f1/f2
-    //      1.000 = f1
-    //   /  1.110 = f2
-    //   -----------
-    //   1000   |   1101
-    //   ----       0.1000111011
-    //   10000
-    //  - 1101
-    //    0011
-    //    -----
-    //     0110
-    //     ----
-    //      1100
-    //      ----
-    //      11000
-    //      -1101
-    //       10110
-    //       -1101
-    //        10010
-    //        -1101
-    //         01010
-    //          ----
-    //          10100
-    //          -1101
-    //           01110
-    //           -1101
-    //            0001
-    // ...
-
-    let dividend = f1.mantissa.slice(0);
-    let divisor = f2.mantissa.slice(0);
-    let binary = [];
-
-    //Minimize divisor
-    LogicOp.minimise(divisor);
-    while(divisor[divisor.length-1]!=true && divisor.length>0){
-      divisor.pop();
-    }
-
-    let temp = dividend.slice(0,divisor.length);
-    dividend = dividend.slice(divisor.length);
-    while(dividend[dividend.length-1]!=true && dividend.length>0){
-      dividend.pop();
-    }
-
-    let end = false;
-    let nbOp = 0;
-    while(!end && nbOp <= result.mantissa.length+2){ //Ajout de marge
-      if(LogicOp.isSubstractable(temp,divisor)){
-        //Substraction
-        binary.push(true);
-
-        //temp - divisor
-        for(let i=divisor.length-1;i>=0;--i){
-          let k = temp.length-divisor.length;
-          let take = divisor[i] === true && temp[i+k] != true;
-          temp[i+k] = (temp[i+k] != true && divisor[i] === true || divisor[i] != true && temp[i+k]===true);
-          if(take){
-            let j = i-1;
-            while(j+k>0 && temp[j+k]!=true){
-              temp[j+k] = !(temp[j+k] === true);
-              j--;
-            }
-            temp[j+k] = !(temp[j+k] === true);
-          }
-        }
-
-        //Remove the first element in all cases
-        LogicOp.minimise(temp);
-
-        if(temp.length == 0 && dividend.length == 0){
-          end = true;
-        }
-      }else{
-        binary.push(false);
-      }
-
-      //Add value
-      if(dividend.length>0){
-        temp.push(dividend.shift());
-      } else {
-        temp.push(false);
-      }
-
-      nbOp++;
-    }
-
-    //Step 3 - Normalise mantissa
-    exp -= LogicOp.minimise(binary);
-    binary.shift();
-    result.mantissa = binary;
-
-    if(!this._checkExponent(exp)){
-      //Overflow or Underflow -> Infinity
-      return new FloatingType(Infinity, this.type);
-    }
-    result.exponent = result._exponentToBinary(exp);
-
-    //Step 4 - Round result
-    result.mantissa.length = result.m;
-
-    //Step 5 - Adjust sign
-    result.sign = LogicOp.xor(f1.sign,f2.sign,false);
-
-    return result;
-  }
-
-  static oneBy(n, type = FloatingTypes.DOUBLE){
-    let float = new FloatingType(1, type);
-    return float.divBy(n);
   }
 
   toStr(){
