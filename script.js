@@ -52,7 +52,7 @@ $(document).ready(()=>{
         float.mantissa[i] = $('#m'+i).prop('checked');
       }
 
-      $('#entry-decimal').val(float.toStr());
+      $('#entry-decimal').val(float.toStr().toString());
     });
   }, 1);
 

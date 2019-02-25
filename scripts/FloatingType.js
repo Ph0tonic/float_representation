@@ -4,6 +4,8 @@
  *  Goal: Representation of a floating value with only int and boolean types
  */
 
+BigNumber.config({DECIMAL_PLACES:5000})
+
 var FloatingTypes = Object.freeze({
   HALF:{exponent:5, mantissa:10, name:'Half - 16 bits'},
   SINGLE:{exponent:8, mantissa:23, name:'Single - 32 bits'},
@@ -736,6 +738,7 @@ class FloatingType{
   }
 
   toStr(){
+    console.log("TOSTR call");
     //TODO: Supprimer - Fonction avec utilisation d'un type float pour tests
     //Special cases
     if(this.isNaN()){
@@ -755,7 +758,7 @@ class FloatingType{
 
     let exp = this._exponentDecimal();
     let length=this.mantissa.length;
-    let result = 1; // valeur caché, compensation
+    let result = new BigNumber(1);
 
     //TODO: Display subnormal values
 
@@ -766,16 +769,17 @@ class FloatingType{
 
     for(let i=0;i<length;++i){
       if(this.mantissa[i]){
-        result += 1/Math.pow(2,i+1);
+        result = result.plus(new BigNumber(1).div(new BigNumber(2).pow(i+1)));
       }
     }
 
-    result *= Math.pow(2,exp);
-    return (this.sign?-1:1)*result;
+    result = result.times(new BigNumber(2).pow(exp));
 
+    return result.times(this.sign?-1:1).toExponential(20);
   }
 
   toString(){
+    console.log("TOSTRING call");
     //Special cases
     if(this.isNaN()){
       return NaN;
