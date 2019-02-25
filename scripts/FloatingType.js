@@ -149,7 +149,6 @@ class FloatingType{
     //Exposant décalé = (2^e)-1 & mantissa <> 0
     let mantissaClone = this.mantissa.slice(0);
     LogicOp.minimise(mantissaClone);
-    console.log("clone"+this.e)
     return (this._exponentDecimal()+this._dOffset() == Math.pow(2,this.e)-1 && mantissaClone.length != 0);
   }
 

@@ -1,14 +1,15 @@
-
 var IntegerTypes = Object.freeze({
-  HALF:{exponent:5, mantissa:10, name:'Half - 16 bits'},
-  SINGLE:{exponent:8, mantissa:23, name:'Single - 32 bits'},
-  DOUBLE:{exponent:11, mantissa:52, name:'Double - 64 bits'},
-  EXTENDED:{exponent:15, mantissa:64, name:'Extended - 80 bits'},
-  QUAD:{exponent:15, mantissa:112, name:'Quad - 128 bits'}
+  HALF:{size:8, name:'Byte - 8 bits'},
+  SINGLE:{size:8, name:'Short - 16 bits'},
+  DOUBLE:{size:11, name:'Int - 32 bits'},
+  EXTENDED:{size:15, name:'Long - 64 bits'}
 })
-  
-class IntegerType{
-  constructor(value, type = FloatingTypes.DOUBLE) {
 
+class IntegerType{
+
+  constructor(value, type = IntegerTypes.DOUBLE) {
+    this.size = type.size;
+    this.sign = [true];
+    this.value = [true,true,true,true,true,true,false];
   }
 }

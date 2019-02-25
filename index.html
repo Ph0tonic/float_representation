@@ -18,16 +18,40 @@
       </ul>
     </div>
     <div>
-      <h2>Part 1</h2>
-      <h3>Bidirectionnal conversion</h3>
+      <h2>Part 1 - Basics types</h2>
       <div class="form-group">
-      <label for="number-type">Type</label>
-      <select id="number-type" name="number-type" class="form-control">
+      <label for="whole-types">Type</label>
+      <select id="whole-types" name="whole-types" class="form-control">
       </select> 
       </div>
       <div class="form-group">
-        <label for="entry-decimal">Enter your number : </label>
-        <input type="text" class="form-control" id="entry-decimal" placeholder="NaN">
+        <label for="entry-whole">Enter your number : </label>
+        <input type="number" class="form-control" id="entry-whole" placeholder="0">
+      </div>
+      <h4>Résults</h3>
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>Sign</th>
+            <th>Whole</th>
+          </tr>
+        </thead>
+        <tbody id="binary-whole">
+        </tbody>
+      </table>
+      <span id="binary-whole"></span>
+    </div>
+    <hr>
+    <div>
+      <h2>Part 2 - Floating types</h2>
+      <div class="form-group">
+      <label for="floating-types">Type</label>
+      <select id="floating-types" name="floating-types" class="form-control">
+      </select> 
+      </div>
+      <div class="form-group">
+        <label for="entry-float">Enter your number : </label>
+        <input type="text" class="form-control" id="entry-float" placeholder="NaN">
       </div>
       <h4>Résults</h3>
       <table class="table table-bordered">
@@ -38,10 +62,10 @@
             <th>Mantissa</th>
           </tr>
         </thead>
-        <tbody id="binary">
+        <tbody id="binary-float">
         </tbody>
       </table>
-      <span id="binary"></span>
+      <span id="binary-float"></span>
     </div>
     <hr>
     <div>
