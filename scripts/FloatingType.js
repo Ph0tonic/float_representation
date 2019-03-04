@@ -64,45 +64,35 @@ class FloatingType {
             let i = 0;
             let length = this.e;
             for (i = 0; i < length; ++i) {
-                this.exponent.push(false);
+                this
+                    .exponent
+                    .push(false);
             }
 
             length = this.m;
             for (i = 0; i < length; ++i) {
-                this.mantissa.push(false);
+                this
+                    .mantissa
+                    .push(false);
             }
 
         } else {
             let number = new BigNumber(value);
-            if (number.isNaN || number.isInfinity) {
-                //TODO init
+            if (number.isNaN){
                 this.sign = false;
-                this.mantissa = [];
-                this.exponent = [];
-
-                let i = 0;
-                let length = this.e;
-                for (i = 0; i < length; ++i) {
-                    this.exponent.push(false);
-                }
-
-                length = this.m;
-                for (i = 0; i < length; ++i) {
-                    this.mantissa.push(false);
-                }
-
+                this._initNaN();
+            }else if(number.isInfinity) {
+                this.sign = number.isNegative();
+                this._initInfinity();
             } else {
                 this._init(value)
             }
-
-            //
-
         }
 
         // if ((value || value === 0) && !isNaN(value)) {     if (value === -0) {  value
         // = "-0";     } else if (Number.isInteger(value)) {         value =
         // value.toString();     }     if (value === Infinity || value == "Infinity") {
-        //       //Infinity         this.sign = false;         this.exponent =
+        //      //Infinity         this.sign = false;         this.exponent =
         // this._exponentToBinary(Math.pow(2, this.e) - 1 - this._dOffset());
         // this.exponent.length = this.e;         this.mantissa = [];
         // this.mantissa.length = this.m;     } else if (value === -Infinity || value ==
@@ -111,7 +101,7 @@ class FloatingType {
         // this.exponent.length = this.e;         this.mantissa = [];
         // this.mantissa.length = this.m;     } else {         //Standard cases
         // this._init(value);     } } else {     if (Number.isNaN(NaN)) {         //NaN
-        //       this.sign = false;         this.exponent =
+        //      this.sign = false;         this.exponent =
         // this._exponentToBinary(Math.pow(2, this.e) - 1 - this._dOffset());
         // this.exponent.length = this.e;         this.mantissa = [true];
         // this.mantissa.length = this.m;     } else {         //Initialisation sans
@@ -119,6 +109,48 @@ class FloatingType {
         // this.exponent.length = this.e;         this.mantissa = [];
         // this.mantissa.length = this.m;     } }
         this._cleanMantissa();
+    }
+
+    _initNaN() {
+        //TODO
+        this.mantissa = [];
+        this.exponent = [];
+
+        let i = 0;
+        let length = this.e;
+        for (i = 0; i < length; ++i) {
+            this
+                .exponent
+                .push(false);
+        }
+
+        length = this.m;
+        for (i = 0; i < length; ++i) {
+            this
+                .mantissa
+                .push(false);
+        }
+    }
+
+    _initInfinity() {
+        //TODO
+        this.mantissa = [];
+        this.exponent = [];
+
+        let i = 0;
+        let length = this.e;
+        for (i = 0; i < length; ++i) {
+            this
+                .exponent
+                .push(false);
+        }
+
+        length = this.m;
+        for (i = 0; i < length; ++i) {
+            this
+                .mantissa
+                .push(false);
+        }
     }
 
     isNaN() {
@@ -275,7 +307,7 @@ class FloatingType {
 
         //Step 6+7 - Exponent to Binary
         console.log("second leak")
-        return;
+
         this.exponent = this._exponentToBinary(exponent);
         this.mantissa = binaryMantissa;
     }
@@ -322,7 +354,7 @@ class FloatingType {
             .times(this.sign
             ? -1
             : 1)
-            .toExponential(20);
+            .toString();
     }
 
     toString() {

@@ -34,6 +34,7 @@ class IntegerType {
             let n = new BigNumber(value)
                 .integerValue()
                 .plus(new BigNumber(2).pow(this.size - 1));
+                
             for (let i = 0; i < this.size; ++i) {
                 this
                     .value

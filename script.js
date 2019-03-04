@@ -22,7 +22,6 @@ $(document).ready(() => {
     });
 
     $('#entry-whole').on('input', () => {
-        console.log($("#whole-types").val())
         integer = new IntegerType($('#entry-whole').val(), IntegerTypes[$("#whole-types").val()]);
 
         //Formulaire de binary to decimal
