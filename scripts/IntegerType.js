@@ -21,8 +21,6 @@ class IntegerType {
 
     constructor(value, type = IntegerTypes.DOUBLE) {
         this.size = type.size;
-        console.log(type)
-        console.log("size : " + this.size)
         this.value = [];
 
         if (value === undefined) {
@@ -32,30 +30,36 @@ class IntegerType {
                     .push(true)
             }
         } else {
-            //TODO Init value array
+            //Init integer value
+            let n = new BigNumber(value)
+                .integerValue()
+                .plus(new BigNumber(2).pow(this.size - 1));
+            for (let i = 0; i < this.size; ++i) {
+                this
+                    .value
+                    .unshift(n.mod(2) == 1);
+                n = n
+                    .minus(n.mod(2))
+                    .div(2);
+            }
         }
-        console.log(this.value)
     }
 
     toString() {
-        console.log(this.value)
         let two = new BigNumber(2);
         let n = new BigNumber(0);
         let length = this.value.length;
-        console.log(length)
+        
         for (let i = 0; i < length; ++i) {
             n = n
                 .times(two)
                 .plus(this.value[i]
                     ? 1
                     : 0);
-            console.log(this.value[i]
-                ? 1
-                : 0)
         }
+        
         n = n.minus(two.pow(this.size - 1));
-        console.log(n.toString());
+        
         return n.toExponential(20);
     }
-
 }
