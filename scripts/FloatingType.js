@@ -231,7 +231,7 @@ class FloatingType {
         //Step 1 - sign
         this.sign = n.isNegative();
         if (n.isNegative()) {
-            n = n.negate();
+            n = n.negated();
         }
 
         //Step 2 - separate integer part from floating part
