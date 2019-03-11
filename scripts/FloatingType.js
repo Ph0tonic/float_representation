@@ -172,20 +172,21 @@ class FloatingType {
     _wholeToBinary(whole) {
         //Convert an int as an integer part in binary
         let binary = [];
-        while (!whole.isZero()) {
+        let limit = this.m + 1;
+        while (!whole.isZero() && limit > 0) {
             binary.unshift(!!(whole.mod(2).valueOf())); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
             whole = whole.minus(whole.mod(2));
             whole = whole.div(2);
+            limit--;
         }
         return binary;
     }
 
-    _decimalToBinary(decimal) {
+    _decimalToBinary(decimal, limit) {
         //Converts the decimal place of a number in binary
         let binary = [];
-        let count = 0;
         
-        while (!decimal.isZero()) { 
+        while (!decimal.isZero() && limit > 0) { 
             decimal = decimal.times(2);
             binary.push(!!(decimal.gte(1))); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
             if (decimal.gte(1)) {
@@ -238,10 +239,12 @@ class FloatingType {
         let whole = n.integerValue(BigNumber.ROUND_DOWN);
         let decimal = n.minus(whole);
         
+        console.log("Before Step 3")
         //Step 3 - Fraction and whole part to binary
         whole = this._wholeToBinary(whole);
-        decimal = this._decimalToBinary(decimal);
+        decimal = this._decimalToBinary(decimal, this.m + 1 - whole.length);
 
+        console.log("Before Step 3.5")
         //Step 3.5 - Special case 0
         if (decimal.length === 0 && whole.length === 0) {
             this.exponent = this._exponentToBinary(-this._dOffset());
@@ -251,7 +254,7 @@ class FloatingType {
         //Step 4 - Join together
         let wholeSize = whole.length;
         let binaryMantissa = whole.concat(decimal);
-
+        console.log("Before Step 5")
         //Step 5 - How many space to move
         let exponent = 0;
         if (wholeSize > 1) {
@@ -265,8 +268,8 @@ class FloatingType {
                 binaryMantissa.shift();
             }
         }
-        
-        //TODO: Detect subnormal number
+        console.log("After Step 5")
+        //Detect subnormal number
         if (exponent > -this._dOffset()){
             //Normal number
             binaryMantissa.shift(); //remove of the hidden 1
@@ -283,6 +286,7 @@ class FloatingType {
             }
         }
 
+        console.log("Before Step 6")
         //Step 6+7 - Exponent to Binary
         this.exponent = this._exponentToBinary(exponent);
         this.mantissa = binaryMantissa;
