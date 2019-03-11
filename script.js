@@ -86,7 +86,7 @@ $(document).ready(() => {
                 float.mantissa[i] = $('#f_m' + i).prop('checked');
             }
 
-            $('#entry-float').val(float.toStr());
+            $('#entry-float').val(float.toString());
         });
 
     }, 1);
