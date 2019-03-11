@@ -252,7 +252,7 @@ class FloatingType {
         
         let n = new BigNumber(value);
 
-        //Step 1 - signe
+        //Step 1 - sign
         this.sign = n.isNegative();
         if (n.isNegative()) {
             n = n.negate();
@@ -261,16 +261,13 @@ class FloatingType {
         //Step 2 - separate integer part from floating part
         let whole = n.integerValue(BigNumber.ROUND_DOWN);
         let decimal = n.minus(whole);
-
         
-        //Step 3 - Fraction section to binary
+        //Step 3 - Fraction and whole part to binary
         whole = this._wholeToBinary(whole);
         decimal = this._decimalToBinary(decimal);
 
         //Step 3.5 - Special case 0
         if (decimal.length === 0 && whole.length === 0) {
-            this.mantissa = [];
-            console.log("potential leak")
             this.exponent = this._exponentToBinary(-this._dOffset());
             return;
         }
@@ -323,8 +320,12 @@ class FloatingType {
         let exp = this._exponentDecimal();
         let length = this.mantissa.length;
         let result = new BigNumber(1);
+        if(this.isSubnormal()){
+            result = new BigNumber(0);
+            exp ++;
+        }
 
-        //TODO: Display subnormal values Limitation du travail
+        //Remove zero at the end of the mantissa
         while (this.mantissa[length - 1] != true && length >= 1) {
             length--;
         }
