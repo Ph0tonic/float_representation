@@ -1,7 +1,7 @@
 /**
  *  Author: Bastien Wermeille
- *  Date: Février-Mars 2018
- *  Goal: Representation of a floating value with only int and boolean types
+ *  Date: Février-Mars 2019
+ *  Goal: Representation of a floating value
  */
 BigNumber.config({DECIMAL_PLACES: 5000})
 
@@ -44,9 +44,6 @@ class LogicOp {
     }
 }
 
-/*
-*  Underscore is standard to say "Should not be accessed from outside"
-*/
 class FloatingType {
     constructor(value, type = FloatingTypes.DOUBLE) {
         this.type = type;
@@ -86,30 +83,10 @@ class FloatingType {
             }
         }
 
-        // if ((value || value === 0) && !isNaN(value)) {     if (value === -0) {  value
-        // = "-0";     } else if (Number.isInteger(value)) {         value =
-        // value.toString();     }     if (value === Infinity || value == "Infinity") {
-        //      //Infinity         this.sign = false;         this.exponent =
-        // this._exponentToBinary(Math.pow(2, this.e) - 1 - this._dOffset());
-        // this.exponent.length = this.e;         this.mantissa = [];
-        // this.mantissa.length = this.m;     } else if (value === -Infinity || value ==
-        // "-Infinity") {         this.sign = true;         this.exponent =
-        // this._exponentToBinary(Math.pow(2, this.e) - 1 - this._dOffset());
-        // this.exponent.length = this.e;         this.mantissa = [];
-        // this.mantissa.length = this.m;     } else {         //Standard cases
-        // this._init(value);     } } else {     if (Number.isNaN(NaN)) {         //NaN
-        //      this.sign = false;         this.exponent =
-        // this._exponentToBinary(Math.pow(2, this.e) - 1 - this._dOffset());
-        // this.exponent.length = this.e;         this.mantissa = [true];
-        // this.mantissa.length = this.m;     } else {         //Initialisation sans
-        // valeur         this.sign = false;         this.exponent = [];
-        // this.exponent.length = this.e;         this.mantissa = [];
-        // this.mantissa.length = this.m;     } }
         this._cleanMantissa();
     }
 
     _initNaN() {
-        //TODO
         this.mantissa = [];
         this.exponent = [];
 
@@ -130,7 +107,6 @@ class FloatingType {
     }
 
     _initInfinity() {
-        //TODO
         this.mantissa = [];
         this.exponent = [];
 
@@ -209,7 +185,7 @@ class FloatingType {
         let binary = [];
         let count = 0;
         
-        while (!decimal.isZero() && count < this.m) {
+        while (!decimal.isZero()) { 
             decimal = decimal.times(2);
             binary.push(!!(decimal.gte(1))); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
             if (decimal.gte(1)) {
@@ -276,7 +252,6 @@ class FloatingType {
         let wholeSize = whole.length;
         let binaryMantissa = whole.concat(decimal);
 
-        //TODO: Detect subnormal number
         //Step 5 - How many space to move
         let exponent = 0;
         if (wholeSize > 1) {
@@ -290,8 +265,23 @@ class FloatingType {
                 binaryMantissa.shift();
             }
         }
-        binaryMantissa.shift(); //remove of the hidden 1
-        binaryMantissa.length = this.m;
+        
+        //TODO: Detect subnormal number
+        if (exponent > -this._dOffset()){
+            //Normal number
+            binaryMantissa.shift(); //remove of the hidden 1
+            binaryMantissa.length = this.m;
+        }
+        else
+        {
+            //Subnormal numbers
+            let shift = exponent;
+            exponent = this._exponentToBinary(this._dOffset());
+            while(shift < -this._dOffset()){
+                binaryMantissa.unshift(false)
+                shift++;
+            }
+        }
 
         //Step 6+7 - Exponent to Binary
         this.exponent = this._exponentToBinary(exponent);
@@ -320,6 +310,8 @@ class FloatingType {
         let exp = this._exponentDecimal();
         let length = this.mantissa.length;
         let result = new BigNumber(1);
+
+        //If subnormal adapt exponent and remove hidden bit
         if(this.isSubnormal()){
             result = new BigNumber(0);
             exp ++;

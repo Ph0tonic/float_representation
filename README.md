@@ -4,10 +4,6 @@ Internal storage floating point representation
 ## TODO
 ### JS
 - [X] Float representation
-- [X] Addition
-- [X] Substraction
-- [X] Multiplication
-- [X] Division
 - [X] Special cases 0, NaN, Infinity
 - [X] Bi-directionnal conversion
 - [X] Gestion des types (Half 16bits, Single 32bits, Double 64bits, x86 Extended precision 80bits, Quad 128bits)
@@ -16,4 +12,3 @@ Internal storage floating point representation
 ### Interface
 - [X] Conversion bi-directionnal
 - [X] Basic operations
-- [X] Pi approximation
