@@ -192,7 +192,7 @@ class FloatingType {
             if (decimal.gte(1)) {
                 decimal = decimal.minus(1);
             }
-            count++;
+            //count++;
         }
 
         return binary;
@@ -242,6 +242,7 @@ class FloatingType {
         console.log("Before Step 3")
         //Step 3 - Fraction and whole part to binary
         whole = this._wholeToBinary(whole);
+        console.log("Before Step 3.1")
         decimal = this._decimalToBinary(decimal, this.m + 1 - whole.length);
 
         console.log("Before Step 3.5")
@@ -254,7 +255,7 @@ class FloatingType {
         //Step 4 - Join together
         let wholeSize = whole.length;
         let binaryMantissa = whole.concat(decimal);
-        console.log("Before Step 5")
+        
         //Step 5 - How many space to move
         let exponent = 0;
         if (wholeSize > 1) {
@@ -268,9 +269,9 @@ class FloatingType {
                 binaryMantissa.shift();
             }
         }
-        console.log("After Step 5")
+        
         //Detect subnormal number
-        if (exponent > -this._dOffset()){
+        if (exponent > -this._dOffset() || this.type === FloatingType.EXTENDED){
             //Normal number
             binaryMantissa.shift(); //remove of the hidden 1
             binaryMantissa.length = this.m;
@@ -316,7 +317,7 @@ class FloatingType {
         let result = new BigNumber(1);
 
         //If subnormal adapt exponent and remove hidden bit
-        if(this.isSubnormal()){
+        if(this.isSubnormal() || this.type === FloatingType.EXTENDED){
             result = new BigNumber(0);
             exp ++;
         }
