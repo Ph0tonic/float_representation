@@ -46,54 +46,46 @@ class IntegerType {
             console.log(this.value)
             //Complement to 2
             if (negative){
-                //Inverse
-                this.value = this.value.map(e => !e);
-                console.log(this.value)
-                //Add 1
-                let end = false;
-                let i = this.value.length-1;
-                console.log(i)
-                while(!end && i >= 0) {
-                    this.value[i] = !this.value[i];
-                    if(this.value[i]){
-                        end = true;
-                    }
-                    --i;
-                }
+                this.value = this._twoComplement(this.value);
             }
             console.log(this.value)
         }
     }
 
-    toString() {
-        let negative = false;
-
-        //inverse 2 complement
-        if (this.value[0] === true) {
-            negative = true;
-
-            //Inverse
-            this.value = this.value.map(e => !e);
+    _twoComplement(value) {
+        //Inverse
+        value = value.slice(0).map(e => !e);
             
-            //Add 1
-            let end = false;
-            let i = this.value.length-1;
-            while(!end && i >= 0) {
-                this.value[i] = !this.value[i];
-                if(this.value[i]){
-                    end = true;
-                }
-                --i;
+        //Add 1
+        let end = false;
+        let i = value.length-1;
+        while(!end && i >= 0) {
+            value[i] = !value[i];
+            if(value[i]){
+                end = true;
             }
+            --i;
         }
-        console.log(this.value)
+        return value;
+    }
+
+    toString() {
+        let value = this.value.slice(0);
+        let negative = false;
+        
+        //inverse 2 complement
+        if (value[0] === true) {
+            negative = true;
+            value = this._twoComplement(this.value);
+        }
+        console.log(value)
 
         let two = new BigNumber(2);
         let n = new BigNumber(0);
-        let length = this.value.length;
+        let length = value.length;
         
         for (let i = 0; i < length; ++i) {
-            n = n.times(two).plus(this.value[i] ? 1 : 0);
+            n = n.times(two).plus(value[i] ? 1 : 0);
         }
         
         if(negative){
