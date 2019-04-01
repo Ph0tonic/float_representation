@@ -56,6 +56,7 @@ $(document).ready(() => {
         result += '</td>';
 
         $('#binary-float').html(result);
+        $('#float-exp').html(float.dOffset());
     });
 
     setTimeout(() => {
@@ -87,6 +88,7 @@ $(document).ready(() => {
             }
 
             $('#entry-float').val(float.toString());
+            $('#float-exp').html(float.dOffset());
         });
 
     }, 1);

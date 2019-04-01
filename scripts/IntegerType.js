@@ -1,3 +1,8 @@
+/**
+ *  Author: Bastien Wermeille
+ *  Date: Février-Mars 2019
+ *  Goal: Representation of a integer value
+ */
 var IntegerTypes = Object.freeze({
     HALF: {
         size: 8,
@@ -18,7 +23,6 @@ var IntegerTypes = Object.freeze({
 })
 
 class IntegerType {
-
     constructor(value, type = IntegerTypes.DOUBLE) {
         this.size = type.size;
         this.value = [];
@@ -43,12 +47,10 @@ class IntegerType {
                 n = n.minus(n.mod(2)).div(2);
             }
 
-            console.log(this.value)
             //Complement to 2
             if (negative){
                 this.value = this._twoComplement(this.value);
             }
-            console.log(this.value)
         }
     }
 
@@ -73,12 +75,11 @@ class IntegerType {
         let value = this.value.slice(0);
         let negative = false;
         
-        //inverse 2 complement
         if (value[0] === true) {
+            //inverse 2 complement
             negative = true;
             value = this._twoComplement(this.value);
         }
-        console.log(value)
 
         let two = new BigNumber(2);
         let n = new BigNumber(0);

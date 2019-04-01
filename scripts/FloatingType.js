@@ -72,7 +72,10 @@ class FloatingType {
         } else {
             let number = new BigNumber(value);
             
-            if (number.isNaN()){
+            if (number.isZero()){
+                this.sign = number.isNegative();
+                this._initZero();
+            }else if (number.isNaN()){
                 this.sign = false;
                 this._initNaN();
             }else if(!number.isFinite()) {
@@ -84,6 +87,11 @@ class FloatingType {
         }
 
         this._cleanMantissa();
+    }
+
+    _initZero() {
+        this.mantissa = [];
+        this.exponent = [];
     }
 
     _initNaN() {
@@ -132,7 +140,7 @@ class FloatingType {
             .mantissa
             .slice(0);
         LogicOp.minimise(mantissaClone);
-        return (this._exponentDecimal() + this._dOffset() == Math.pow(2, this.e) - 1 && mantissaClone.length != 0);
+        return (this._exponentDecimal() + this.dOffset() == Math.pow(2, this.e) - 1 && mantissaClone.length != 0);
     }
 
     isZero() {
@@ -141,7 +149,7 @@ class FloatingType {
             .mantissa
             .slice(0);
         LogicOp.minimise(mantissaClone);
-        return (this._exponentDecimal() + this._dOffset() == 0 && mantissaClone.length == 0);
+        return (this._exponentDecimal() + this.dOffset() == 0 && mantissaClone.length == 0);
     }
 
     isInfinity() {
@@ -150,7 +158,7 @@ class FloatingType {
             .mantissa
             .slice(0);
         LogicOp.minimise(mantissaClone);
-        return (this._exponentDecimal() + this._dOffset() == Math.pow(2, this.e) - 1 && mantissaClone.length == 0);
+        return (this._exponentDecimal() + this.dOffset() == Math.pow(2, this.e) - 1 && mantissaClone.length == 0);
     }
 
     isSubnormal() {
@@ -159,7 +167,7 @@ class FloatingType {
             .mantissa
             .slice(0);
         LogicOp.minimise(mantissaClone);
-        return (this._exponentDecimal() + this._dOffset() == 0 && mantissaClone.length > 0)
+        return (this._exponentDecimal() + this.dOffset() == 0 && mantissaClone.length > 0)
     }
 
     _cleanMantissa() {
@@ -170,11 +178,12 @@ class FloatingType {
         }
 
     _wholeToBinary(whole) {
+        console.log(whole)
         //Convert an int as an integer part in binary
         let binary = [];
-        let limit = this.m + 1;
+        let limit = this.m + 1 + this.dOffset()+1;
         while (!whole.isZero() && limit > 0) {
-            binary.unshift(!!(whole.mod(2).valueOf())); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
+            binary.unshift(!!Number(whole.mod(2).valueOf())); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
             whole = whole.minus(whole.mod(2));
             whole = whole.div(2);
             limit--;
@@ -185,14 +194,13 @@ class FloatingType {
     _decimalToBinary(decimal, limit) {
         //Converts the decimal place of a number in binary
         let binary = [];
-        
-        while (!decimal.isZero() && limit > 0) { 
+        while (!decimal.isZero() && limit > 0) {
             decimal = decimal.times(2);
-            binary.push(!!(decimal.gte(1))); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
+            binary.push(!!decimal.gte(1)); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
             if (decimal.gte(1)) {
                 decimal = decimal.minus(1);
             }
-            //count++;
+            --limit;
         }
 
         return binary;
@@ -200,12 +208,12 @@ class FloatingType {
 
     _checkExponent(exponent) {
         // valide -> true overflow ou underflow -> false
-        return exponent <= this._dOffset() && exponent >= -this._dOffset() + 1;
+        return exponent <= this.dOffset() && exponent >= -this.dOffset() + 1;
     }
 
     _exponentToBinary(exponent) {
         //Convert an exponent in Binary
-        exponent += this._dOffset();
+        exponent += this.dOffset();
 
         let binary = [];
         for (let i = 0; i < this.e; ++i) {
@@ -242,13 +250,23 @@ class FloatingType {
         console.log("Before Step 3")
         //Step 3 - Fraction and whole part to binary
         whole = this._wholeToBinary(whole);
-        console.log("Before Step 3.1")
-        decimal = this._decimalToBinary(decimal, this.m + 1 - whole.length);
+        console.log("Whole : ")
+        console.log(whole)
+
+        console.log("Limit : ")
+        console.log(this.dOffset())
+        console.log(this.dOffset() + this.m)
+        let limit = this.m + 1 + this.dOffset()+1 - whole.length;
+
+
+        decimal = this._decimalToBinary(decimal, this.m + 1 + this.dOffset() + 1 - whole.length);
+        console.log("Decimal : ")
+        console.log(decimal)
 
         console.log("Before Step 3.5")
         //Step 3.5 - Special case 0
         if (decimal.length === 0 && whole.length === 0) {
-            this.exponent = this._exponentToBinary(-this._dOffset());
+            this.exponent = this._exponentToBinary(-this.dOffset());
             return;
         }
 
@@ -271,17 +289,22 @@ class FloatingType {
         }
         
         //Detect subnormal number
-        if (exponent > -this._dOffset() || this.type === FloatingType.EXTENDED){
+        console.log("Pre exponent")
+        console.log(exponent)
+        if (exponent > -this.dOffset()){
             //Normal number
             binaryMantissa.shift(); //remove of the hidden 1
             binaryMantissa.length = this.m;
+        }
+        else if(this.type === FloatingType.EXTENDED){
+            binaryMantissa.shift();
         }
         else
         {
             //Subnormal numbers
             let shift = exponent;
-            exponent = this._exponentToBinary(this._dOffset());
-            while(shift < -this._dOffset()){
+            exponent = this._exponentToBinary(this.dOffset());
+            while(shift < -this.dOffset()){
                 binaryMantissa.unshift(false)
                 shift++;
             }
@@ -290,10 +313,13 @@ class FloatingType {
         console.log("Before Step 6")
         //Step 6+7 - Exponent to Binary
         this.exponent = this._exponentToBinary(exponent);
+        console.log("exponent")
+        console.log(this.exponent)
         this.mantissa = binaryMantissa;
     }
 
     toString() {
+        console.log(this._exponentDecimal)
         // Special cases
         if (this.isNaN()) {
             return NaN;
@@ -321,6 +347,8 @@ class FloatingType {
             result = new BigNumber(0);
             exp ++;
         }
+        console.log("Exponent : ")
+        console.log(exp)
 
         //Remove zero at the end of the mantissa
         while (this.mantissa[length - 1] != true && length >= 1) {
@@ -372,11 +400,11 @@ class FloatingType {
                 : 0;
             tot = tot * 2 + n;
         }
-        tot -= this._dOffset();
+        tot -= this.dOffset();
         return tot;
     }
 
-    _dOffset() {
+    dOffset() {
         return Math.pow(2, this.e - 1) - 1;
     }
 }
