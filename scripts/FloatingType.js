@@ -178,11 +178,11 @@ class FloatingType {
         }
 
     _wholeToBinary(whole) {
-        console.log(whole)
         //Convert an int as an integer part in binary
         let binary = [];
+        //TODO: Decide what to do with number too big
         let limit = this.m + 1 + this.dOffset()+1;
-        while (!whole.isZero() && limit > 0) {
+        while (!whole.isZero()) {
             binary.unshift(!!Number(whole.mod(2).valueOf())); //!! pour que les valeurs soient des booléens et non pas un 0 ou un 1
             whole = whole.minus(whole.mod(2));
             whole = whole.div(2);
@@ -247,23 +247,10 @@ class FloatingType {
         let whole = n.integerValue(BigNumber.ROUND_DOWN);
         let decimal = n.minus(whole);
         
-        console.log("Before Step 3")
         //Step 3 - Fraction and whole part to binary
         whole = this._wholeToBinary(whole);
-        console.log("Whole : ")
-        console.log(whole)
-
-        console.log("Limit : ")
-        console.log(this.dOffset())
-        console.log(this.dOffset() + this.m)
-        let limit = this.m + 1 + this.dOffset()+1 - whole.length;
-
-
         decimal = this._decimalToBinary(decimal, this.m + 1 + this.dOffset() + 1 - whole.length);
-        console.log("Decimal : ")
-        console.log(decimal)
-
-        console.log("Before Step 3.5")
+        
         //Step 3.5 - Special case 0
         if (decimal.length === 0 && whole.length === 0) {
             this.exponent = this._exponentToBinary(-this.dOffset());
@@ -289,8 +276,6 @@ class FloatingType {
         }
         
         //Detect subnormal number
-        console.log("Pre exponent")
-        console.log(exponent)
         if (exponent > -this.dOffset()){
             //Normal number
             binaryMantissa.shift(); //remove of the hidden 1
@@ -310,11 +295,8 @@ class FloatingType {
             }
         }
 
-        console.log("Before Step 6")
         //Step 6+7 - Exponent to Binary
         this.exponent = this._exponentToBinary(exponent);
-        console.log("exponent")
-        console.log(this.exponent)
         this.mantissa = binaryMantissa;
     }
 
@@ -347,8 +329,6 @@ class FloatingType {
             result = new BigNumber(0);
             exp ++;
         }
-        console.log("Exponent : ")
-        console.log(exp)
 
         //Remove zero at the end of the mantissa
         while (this.mantissa[length - 1] != true && length >= 1) {
