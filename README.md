@@ -15,12 +15,3 @@ Internal storage floating point representation
 - [ ] Error for number too big or too small
 - [ ] Display offset and exponent value
 
-table des matières
-intro
-ce que l'on a fait
-marche 
-marche pas
-Explication
-    - npom bibliothèpqie
-Améliorations possibles
-Conclusion
