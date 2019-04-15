@@ -93,6 +93,6 @@ class IntegerType {
             n = n.negated();
         }
 
-        return n.toExponential(20);
+        return n.toString();
     }
 }

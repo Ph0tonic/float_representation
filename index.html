@@ -38,6 +38,11 @@
         </thead>
         <tbody id="binary-whole">
         </tbody>
+        <tfoot>
+            <tr class="align-left">
+                <td>Value encoded : <input class="table-input" type="text" id="whole-value" readonly></input></th>
+            </tr>
+        </tfoot>
       </table>
       <span id="binary-whole-span"></span>
     </div>
@@ -50,7 +55,7 @@
       </div>
       <div class="form-group">
         <label for="entry-float">Enter your number : </label>
-        <input type="text" class="form-control" id="entry-float" placeholder="0">
+        <textarea class="form-control" id="entry-float" placeholder="0"></textarea>
       </div>
       <h4>Résults</h3>
       <table class="table table-bordered">
@@ -66,7 +71,7 @@
         <tfoot>
             <tr>
                 <td>Value encoded : </td>
-                <th colspan="2"><input class="table-input" type="text" id="real-value"></input></th>
+                <th colspan="2" class="align-left"><textarea class="table-input" id="real-value" readonly></textarea></th>
             </tr>
         </tfoot>
       </table>

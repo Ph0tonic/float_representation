@@ -42,6 +42,7 @@ $(document).ready(() => {
     result += "</td>";
 
     $("#binary-whole").html(result);
+    $("#whole-value").val(integer.toString());
   });
 
   $("#entry-float").on("input", () => {
@@ -81,7 +82,7 @@ $(document).ready(() => {
 
     $("#binary-float").html(result);
     $("#float-exp").html(float._exponentDecimal() + float.dOffset());
-    $("#float-exp-real").html('<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>'+float._exponentDecimal()+'</mi></msup></math>');
+    $("#float-exp-real").html('<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>'+float.exponentDisplay()+'</mi></msup></math>');
     $('#real-value').val(float.toString());
   });
 
@@ -101,6 +102,7 @@ $(document).ready(() => {
       }
 
       $("#entry-whole").val(integer.toString());
+      $("#whole-value").val(integer.toString());
     });
 
     $("#binary-float").change(".input-float", () => {
@@ -121,7 +123,7 @@ $(document).ready(() => {
 
       $("#entry-float").val(float.toString());
       $("#float-exp").html(float._exponentDecimal() + float.dOffset());
-      $("#float-exp-real").html('<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>'+float._exponentDecimal()+'</mi></msup></math>');
+      $("#float-exp-real").html('<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>'+float.exponentDisplay()+'</mi></msup></math>');
       $('#real-value').val(float.toString());
     });
   }, 1);

@@ -1,21 +1,29 @@
-th, td {
-   text-align: center;
-   padding: 4px;
+th,
+td {
+  text-align: center;
+  padding: 4px;
 }
 
 a:after {
-    content: attr(href);
+  content: attr(href);
 }
 
-.table thead th{
-    vertical-align: middle !important;
+.table thead th {
+  vertical-align: middle !important;
 }
 
-.font-small{
-    font-weight: initial;
+.font-small {
+  font-weight: initial;
 }
 
-.table-input{
-    width:100%;
-    border: none;
+.table-input {
+  border: none;
+}
+
+.align-left {
+  text-align: left !important;
+}
+
+#real-value {
+  width: 100%;
 }

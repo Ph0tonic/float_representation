@@ -272,13 +272,13 @@ class FloatingType {
         }
         
         //Detect subnormal number
-        if (exponent > -this.dOffset()){
+        if (exponent > -this.dOffset() && this.type !== FloatingTypes.EXTENDED){
             //Normal number
             binaryMantissa.shift(); //remove of the hidden 1
             binaryMantissa.length = this.m;
         }
-        else if(this.type === FloatingType.EXTENDED){
-            binaryMantissa.shift();
+        else if(exponent > -this.dOffset() && this.type === FloatingTypes.EXTENDED){
+            //Extended precision
         }
         else
         {
@@ -320,7 +320,7 @@ class FloatingType {
         let result = new BigNumber(1);
 
         //If subnormal adapt exponent and remove hidden bit
-        if(this.isSubnormal() || this.type === FloatingType.EXTENDED){
+        if(this.isSubnormal() || this.type === FloatingTypes.EXTENDED){
             result = new BigNumber(0);
             exp ++;
         }
@@ -381,5 +381,9 @@ class FloatingType {
 
     dOffset() {
         return Math.pow(2, this.e - 1) - 1;
+    }
+
+    exponentDisplay() {
+        return this._exponentDecimal()+(this.isSubnormal() || this.type === FloatingTypes.EXTENDED ?1:0);
     }
 }
