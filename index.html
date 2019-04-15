@@ -46,8 +46,7 @@
       <h2>Part 2 - Floating types</h2>
       <div class="form-group">
       <label for="floating-types">Type</label>
-      <select id="floating-types" name="floating-types" class="form-control">
-      </select> 
+      <select id="floating-types" name="floating-types" class="form-control"></select> 
       </div>
       <div class="form-group">
         <label for="entry-float">Enter your number : </label>
@@ -58,12 +57,18 @@
         <thead class="thead-dark">
           <tr>
             <th>Sign</th>
-            <th>Exponant <span id="float-exp"></span></th>
+            <th>Exponant<span class="font-small"><br/>Value encoded : <span id="float-exp"></span><br>Real value : <span id="float-exp-real"></span></span></th>
             <th>Mantissa</th>
           </tr>
         </thead>
         <tbody id="binary-float">
         </tbody>
+        <tfoot>
+            <tr>
+                <td>Value encoded : </td>
+                <th colspan="2"><input class="table-input" type="text" id="real-value"></input></th>
+            </tr>
+        </tfoot>
       </table>
       <span id="binary-float-span"></span>
     </div>
@@ -75,7 +80,6 @@
         <li><a href="https://ryanstutorials.net/binary-tutorial/binary-floating-point.php"></a></li>
         <li><a href="http://cstl-csm.semo.edu/xzhang/Class%20Folder/CS280/Workbook_HTML/FLOATING_tut.htm"></a></li>
         <li><a href="https://www.doc.ic.ac.uk/~eedwards/compsys/float/"></a></li>
-        <li><a href="http://www.wiris.com/editor/demo/fr/mathml-latex"></a></li>
         <li><a href="https://getbootstrap.com/docs/3.3/"></a></li>
         <li><a href="https://jquery.com/"></a></li>
         <li><a href="https://en.wikipedia.org/wiki/Signed_number_representations"></a></li>
@@ -83,15 +87,13 @@
     </div>
   </div>
 
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
-
+  <!-- External scripts -->
+  <script src="scripts/jquery-3.4.0.min.js"></script>
   <script src="scripts/bignumber.min.js"></script>
 
+  <!-- Specific scripts -->
   <script src="scripts/IntegerType.js"></script>
   <script src="scripts/FloatingType.js"></script>
   <script src="script.js"></script>
-  
 </body>
 </html>

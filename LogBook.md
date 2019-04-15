@@ -2,6 +2,9 @@
 ## Author
 [Bastien Wermeille](https://github.com/Ph0tonic)
 
+## 15 avril 2019
+- Finalisation du code
+
 ## 8 avril 2019
 - Rédaction du rapport
 - Journal de travail

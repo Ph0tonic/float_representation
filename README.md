@@ -13,5 +13,5 @@ Internal storage floating point representation
 - [X] Conversion bi-directionnal
 - [X] Basic operations
 - [ ] Error for number too big or too small
-- [ ] Display offset and exponent value
+- [X] Display offset and exponent value
 

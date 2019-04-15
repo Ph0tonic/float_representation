@@ -6,3 +6,16 @@ th, td {
 a:after {
     content: attr(href);
 }
+
+.table thead th{
+    vertical-align: middle !important;
+}
+
+.font-small{
+    font-weight: initial;
+}
+
+.table-input{
+    width:100%;
+    border: none;
+}

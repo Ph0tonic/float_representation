@@ -71,7 +71,6 @@ class FloatingType {
 
         } else {
             let number = new BigNumber(value);
-            
             if (number.isZero()){
                 this.sign = number.isNegative();
                 this._initZero();
@@ -103,15 +102,12 @@ class FloatingType {
         for (i = 0; i < length; ++i) {
             this
                 .exponent
-                .push(false);
+                .push(true);
         }
 
-        length = this.m;
-        for (i = 0; i < length; ++i) {
-            this
-                .mantissa
-                .push(false);
-        }
+        this
+            .mantissa
+            .push(true);
     }
 
     _initInfinity() {
@@ -123,7 +119,7 @@ class FloatingType {
         for (i = 0; i < length; ++i) {
             this
                 .exponent
-                .push(false);
+                .push(true);
         }
 
         length = this.m;
@@ -301,7 +297,6 @@ class FloatingType {
     }
 
     toString() {
-        console.log(this._exponentDecimal)
         // Special cases
         if (this.isNaN()) {
             return NaN;
