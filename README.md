@@ -12,6 +12,4 @@ Internal storage floating point representation
 ### Interface
 - [X] Conversion bi-directionnal
 - [X] Basic operations
-- [ ] Error for number too big or too small
 - [X] Display offset and exponent value
-

@@ -2,8 +2,14 @@
 ## Author
 [Bastien Wermeille](https://github.com/Ph0tonic)
 
+## 19 avril 2019
+- Création de l'affiche
+- Peaufinage du rapport
+
 ## 15 avril 2019
 - Finalisation du code
+- Corrections des derniers bugs
+- Améliorations de la partie interaction de l'affichage
 
 ## 8 avril 2019
 - Rédaction du rapport
