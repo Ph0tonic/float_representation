@@ -2,6 +2,10 @@
 ## Author
 [Bastien Wermeille](https://github.com/Ph0tonic)
 
+## 27 avril 2019
+- Finalisation de l'affiche
+- Création de la présentation
+
 ## 19 avril 2019
 - Création de l'affiche
 - Peaufinage du rapport
