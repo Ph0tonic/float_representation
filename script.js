@@ -82,8 +82,12 @@ $(document).ready(() => {
 
     $("#binary-float").html(result);
     $("#float-exp").html(float._exponentDecimal() + float.dOffset());
-    $("#float-exp-real").html('<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>'+float.exponentDisplay()+'</mi></msup></math>');
-    $('#real-value').val(float.toString());
+    $("#float-exp-real").html(
+      '<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>' +
+        float.exponentDisplay() +
+        "</mi></msup></math>"
+    );
+    $("#real-value").val(float.toString());
   });
 
   setTimeout(() => {
@@ -123,8 +127,12 @@ $(document).ready(() => {
 
       $("#entry-float").val(float.toString());
       $("#float-exp").html(float._exponentDecimal() + float.dOffset());
-      $("#float-exp-real").html('<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>'+float.exponentDisplay()+'</mi></msup></math>');
-      $('#real-value').val(float.toString());
+      $("#float-exp-real").html(
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mn>2</mn><mi>' +
+          float.exponentDisplay() +
+          "</mi></msup></math>"
+      );
+      $("#real-value").val(float.toString());
     });
   }, 1);
 });
